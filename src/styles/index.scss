@@ -1,0 +1,19 @@
+@import '~foundation/scss/foundation';
+
+header {
+  height: 100px;
+  border-bottom: 1px solid lightgray;
+  margin-bottom: 20px;
+
+  button.save {
+    position: absolute;
+    right: 50px;
+    top: 25px;
+  }
+
+}
+
+prosemirror {
+  height: 500px;
+  min-width: 468px;
+}

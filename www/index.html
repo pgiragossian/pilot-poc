@@ -1,0 +1,15 @@
+<html>
+    <head>
+    </head>
+
+    <body ng-app="app" ng-controller="appControllerEditor as editorCtl">
+        <header>
+            <button class="save" type="button" ng-click="editorCtl.save()">Save</button>
+        </header>
+        <div class="row">
+            <prosemirror pm-options="editorCtl.pmOptions" ng-model="editorCtl.content" class="columns small-6 small-offset-3" />
+        </div>
+    </body>
+    <script src="/app.js"></script>
+
+</html>
