@@ -6,11 +6,15 @@ function prosemirror($parse) {
 		return {
 			restrict: 'E',
 			require: '?ngModel',
+			scope: {
+				pmEditor: '=?'
+			},
 			link: function(scope, element, attrs, ngModel) {
 
 				var place = element[0];
 
 				var options = {
+					format: 'json',
 					place: place,
 					menuBar: {float: true}
 				};
@@ -20,6 +24,10 @@ function prosemirror($parse) {
 				options = angular.merge(options, inheritedOptions);
 
 				var pm = new ProseMirror(options);
+
+				if (scope.pmEditor) {
+					scope.pmEditor = pm;
+				}
 
 				pm.on('change', function() {
 					ngModel.$setViewValue(pm.getContent(options.format), 'change');
@@ -33,7 +41,6 @@ function prosemirror($parse) {
 						pm.setContent(ngModel.$viewValue, options.format);
 					}
 				};
-
 			}
 		};
 }

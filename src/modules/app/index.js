@@ -1,10 +1,9 @@
-var app = angular.module('app', []);
+var app = angular.module('app', ['prosemirror']);
 
 import editorCtl from './controller/editor';
 app.controller(editorCtl.name, editorCtl);
 
-import proseMirrorDct from './directive/prosemirror';
-app.directive(proseMirrorDct.name, proseMirrorDct);
+
 
 
 

@@ -1,28 +1,15 @@
+import prosemirrorFct from "src/modules/prosemirror/factory/prosemirror";
 
-function appControllerEditor() {
+function appControllerEditor(prosemirrorFct) {
 
+	// Prose Mirror instance
+	this.editor = null;
 
-	this.content = '';
+	this.prosemirrorFct = prosemirrorFct;
 
-	this.pmOptions = {
-		format: 'json',
-		tooltipMenu: true,
-		menuBar: {float: true}
-	};
-
-	this.restore = function() {
-		this.content = JSON.parse(localStorage.getItem('content'));
-	};
-
-	this.save = function() {
-		localStorage.setItem('content', JSON.stringify(this.content));
-		console.log(this.content);
-	};
-
-	this.restore();
-
+	this.prosemirrorFct.autosave();
 }
 
-appControllerEditor.$inject = [];
+appControllerEditor.$inject = [prosemirrorFct.name];
 
 export default appControllerEditor;

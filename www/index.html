@@ -1,13 +1,25 @@
 <html>
     <head>
+        <link type="text/css" src="style.css" />
     </head>
 
     <body ng-app="app" ng-controller="appControllerEditor as editorCtl">
         <header>
-            <button class="save" type="button" ng-click="editorCtl.save()">Save</button>
+            <button class="save" ng-disabled="!editorCtl.prosemirrorFct.isSaveEnabled()" type="button" ng-click="editorCtl.prosemirrorFct.save()">Save</button>
         </header>
         <div class="row">
-            <prosemirror pm-options="editorCtl.pmOptions" ng-model="editorCtl.content" class="columns small-6 small-offset-3" />
+            <prosemirror pm-editor="editorCtl.editor" pm-options="editorCtl.prosemirrorFct.options" ng-model="editorCtl.prosemirrorFct.model.content" class="columns small-6 small-offset-3">
+            </prosemirror>
+            <div class="columns small-3">
+                <ul>
+                    <li ng-show="editorCtl.prosemirrorFct.lastAutosaveDate">
+                        <a ng-click="editorCtl.prosemirrorFct.restore()">{{ 'Autosave ' + (editorCtl.prosemirrorFct.lastAutosaveDate | date:'dd/MM/yyyy H:mm:ss')}}</a>
+                    </li>
+                    <li ng-repeat="(savedKey, savedValue) in editorCtl.prosemirrorFct.model.saved">
+                        <a ng-click="editorCtl.prosemirrorFct.restore(savedKey)">{{ savedKey }}</a>
+                    </li>
+                </ul>
+            </div>
         </div>
     </body>
     <script src="/app.js"></script>
