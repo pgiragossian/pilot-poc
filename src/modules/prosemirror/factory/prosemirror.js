@@ -18,8 +18,6 @@ function prosemirrorFactoryProsemirror($interval) {
 
 	};
 
-	this.init();
-
 	var autosave = () => {
 		localStorage.setItem('content', JSON.stringify(this.model.content));
 		this.lastAutosaveDate = new Date();
@@ -59,6 +57,11 @@ function prosemirrorFactoryProsemirror($interval) {
 			}
 		}
 	};
+
+
+	this.init();
+	this.restore();
+
 
 	return this;
 
