@@ -1,8 +1,10 @@
 @import '~foundation/scss/foundation';
 
+$gray: #e2e3de;
+
 header {
   height: 100px;
-  border-bottom: 1px solid lightgray;
+  border-bottom: 2px solid $gray;
   margin-bottom: 20px;
 
   button.save {
@@ -13,7 +15,48 @@ header {
 
 }
 
-prosemirror {
-  height: 500px;
-  min-width: 468px;
+body {
+
+  prosemirror {
+    height: 500px;
+    min-width: 468px;
+
+    annotation {
+      background: red;
+    }
+
+  }
+
+  .annotation-comment {
+    display: block;
+    min-height: 300px;
+    width: 100%;
+    border: 2px solid $gray;
+    -webkit-border-radius: 10px;
+    -moz-border-radius: 10px;
+    border-radius: 10px;
+
+
+    .resolve {
+      padding: 10px;
+      border-bottom: 2px solid $gray;
+
+      label {
+        display: inline-block;
+      }
+    }
+    .comments {
+      .comment {
+        padding: 5px;
+      }
+      input[type=text] {
+        border: none;
+        background: $gray;
+
+      }
+      button {
+        display: none;
+      }
+    }
+  }
 }
