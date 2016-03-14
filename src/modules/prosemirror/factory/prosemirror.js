@@ -66,6 +66,7 @@ function prosemirrorFactoryProsemirror($interval) {
 	this.save = function() {
 		this.savedModels[new Date().toISOString().slice(0,19)] = JSON.stringify(this.model);
 		localStorage.setItem('savedmodels', JSON.stringify(this.savedModels));
+		console.log(this.model);
 	};
 
 	this.getCurrentComments = function() {

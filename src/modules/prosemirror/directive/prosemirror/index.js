@@ -1,4 +1,4 @@
-import {ProseMirror} from 'prosemirror/dist/edit';
+import {ProseMirror, MarkedRange} from 'prosemirror/dist/edit';
 import 'prosemirror/dist/menu/tooltipmenu';
 import 'prosemirror/dist/menu/menubar';
 import 'prosemirror/dist/menu/menu';
@@ -57,11 +57,21 @@ function prosemirror($parse) {
 
 					if (sel.from && sel.to) {
 						if (sel.from.cmp(sel.to) != 0 ) {
+
+							let mr = pm.markRange(sel.from, sel.to, {'className': 'superMarkedRange'});
+							console.log(mr);
+
+							/*
 							pm.doc.sliceBetween(sel.from, sel.to).forEach(
 								(node, start, end) => {
+
 									console.log(node.textContent, node.type, start, end)
 								}
 							)
+							*/
+
+
+
 						}
 						else {
 							let marks = pm.doc.marksAt(sel.from);
