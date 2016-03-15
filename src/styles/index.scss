@@ -39,11 +39,16 @@ body {
     -webkit-border-radius: 10px;
     -moz-border-radius: 10px;
     border-radius: 10px;
+    margin-bottom: 10px;
 
 
     .resolve {
       padding: 10px;
       border-bottom: 2px solid $gray;
+
+      input {
+        margin: 0;
+      }
 
       label {
         display: inline-block;

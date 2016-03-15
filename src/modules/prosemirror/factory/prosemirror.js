@@ -7,11 +7,12 @@ function prosemirrorFactoryProsemirror($interval, $rootScope) {
 	this.init = function() {
 		this.model = {
 			content: null,
-			annotations: []
+			annotations: {}
 		};
 
 		this.selectedAnnotations = [];
 		this.savedModels = {};
+		this.currentComment = '';
 
 		let item = localStorage.getItem('savedmodels');
 
@@ -62,36 +63,46 @@ function prosemirrorFactoryProsemirror($interval, $rootScope) {
 
 	this.findAnnotationsAt = function(pos) {
 		let result = [];
-		if (this.model.annotations && this.model.annotations.length ) {
-			this.model.annotations.forEach(annotation => {
-				if (annotation.range &&
-						annotation.range.from &&
-						(annotation.range.from.cmp(pos) < 0) &&
-						annotation.range.to &&
-						(annotation.range.to.cmp(pos) > 0)) {
-					result.push(annotation);
-				}
-			});
+
+		for (let annId in this.model.annotations) {
+			let ann = this.model.annotations[annId];
+			if (ann.range &&
+					ann.range.from &&
+					(ann.range.from.cmp(pos) < 0) &&
+					ann.range.to &&
+					(ann.range.to.cmp(pos) > 0)) {
+				result.push(ann);
+			}
 		}
-		console.log('FindAnnotationAt', pos, result);
+
 		return result;
 	};
 	
 	this.addAnnotation = function(from, to, texts, id) {
-		console.log('adding', from, to, texts, id);
 		let range = this.pm.markRange(from, to, {'className': 'annotation', id});
 		this.pm.flush();
 
 		let annotation = {texts, id, range};
-		this.model.annotations.push(annotation);
+		this.model.annotations[id] = annotation;
 		return annotation;
 	};
 
 	this.removeAnnotations = function() {
-		this.model.annotations.forEach(ann => {
+		for(let annId in this.model.annotations) {
+			let ann = this.model.annotations[annId];
 			this.pm.removeRange(ann.range);
-		});
-		this.model.annotations.length = 0;
+		}
+		this.model.annotations = {};
+	};
+
+	this.removeAnnotation = function(id) {
+
+		if (this.model.annotations[id]) {
+
+			let annotation = this.model.annotations[id];
+			this.pm.removeRange(annotation.range);
+			delete this.model.annotations[id];
+		}
 	};
 
 	this.autosave = function() {
@@ -127,44 +138,47 @@ function prosemirrorFactoryProsemirror($interval, $rootScope) {
 				}
 			}
 		}
+		this.currentComment = '';
 	};
 
 	this.restore = function(version) {
 		// autosave
-		let restored;
+		let restoredData;
 		this.selectedAnnotations.length = 0;
+		this.currentComment = '';
 
 		if (version == null) {
 			let item = localStorage.getItem('autosave');
 			if (item) {
-				restored = JSON.parse(item);
+				restoredData = JSON.parse(item);
 			}
 		}
 		else if (this.savedModels[version]) {
 			if (this.savedModels[version]) {
-				restored = JSON.parse(this.savedModels[version]);
+				restoredData = JSON.parse(this.savedModels[version]);
 			}
 		}
-		this.removeAnnotations();
+		if (restoredData) {
 
-		if (restored) {
-			this.model.content = restored.content;
+			var _this = this;
 
-			this.pm.setContent(this.model.content, this.options.format);
-			this.pm.flush();
-
-			if (restored.annotations) {
-				restored.annotations.forEach(ann => {
-					if (ann.range && ann.range.from && ann.range.to) {
-						let from = new Pos(ann.range.from.path, ann.range.from.offset);
-						let to = new Pos(ann.range.to.path, ann.range.to.offset);
-						this.addAnnotation(from, to, ann.texts, ann.id);
+			function restoreAnnotation() {
+				if (restoredData.annotations) {
+					for (let annId in restoredData.annotations) {
+						let ann = restoredData.annotations[annId];
+						if (ann.range && ann.range.from && ann.range.to) {
+							_this.addAnnotation(Pos.fromJSON(ann.range.from), Pos.fromJSON(ann.range.to), ann.texts, ann.id);
+						}
 					}
-				});
+				}
+				_this.pm.off('setDoc', restoreAnnotation);
 			}
+
+			this.pm.on('setDoc', restoreAnnotation);
+
+			this.removeAnnotations();
+			this.model.content = restoredData.content;
 		}
-
-
 	};
 
 	this.init();

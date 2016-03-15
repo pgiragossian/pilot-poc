@@ -23,7 +23,7 @@
             </prosemirror>
             <div class="columns small-3">
                 <div class="annotation-comment" ng-repeat="annotation in editorCtl.prosemirrorFct.selectedAnnotations" ng-if="editorCtl.prosemirrorFct.selectedAnnotations">
-                    <form name="editorCtl.annotationForm" ng-submit="editorCtl.prosemirrorFct.addAnnotationComment(annotation.id, editorCtl.currentComment)">
+                    <form name="editorCtl.annotationForm" ng-submit="editorCtl.prosemirrorFct.addAnnotationComment(annotation.id, editorCtl.prosemirrorFct.currentComment)">
                         <div class="resolve">
                             <input type="checkbox" />
                             <label for="resolveCurrent">Resolve</label>
@@ -32,7 +32,7 @@
                             <div class="comment" ng-repeat="text in annotation.texts  track by $index">
                                 <span>{{ text }}</span>
                             </div>
-                            <input type="text" placeholder="Commentaire" ng-model="editorCtl.currentComment" />
+                            <input type="text" placeholder="Commentaire" ng-model="editorCtl.prosemirrorFct.currentComment" />
                             <button type="submit">Ok</button>
                         </div>
                     </form>
