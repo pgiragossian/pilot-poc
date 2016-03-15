@@ -6,6 +6,7 @@
     <body ng-app="app" ng-controller="appControllerEditor as editorCtl">
         <header>
             <button class="save" ng-disabled="!editorCtl.prosemirrorFct.isSaveEnabled()" type="button" ng-click="editorCtl.prosemirrorFct.save()">Save</button>
+            <button type="button" ng-click="editorCtl.prosemirrorFct.removeSavedContent()">clean</button>
         </header>
         <div class="row">
             <div class="columns small-3">
@@ -18,18 +19,18 @@
                     </li>
                 </ul>
             </div>
-            <prosemirror pm-editor="editorCtl.pm.editor" pm-options="editorCtl.prosemirrorFct.options" pm-on-resolve-annotation="editorCtl.pm.onResolveAnnotation" pm-on-select-annotation="editorCtl.prosemirrorFct.setCurrentAnnotationHash" ng-model="editorCtl.prosemirrorFct.model.content" class="columns small-6">
+            <prosemirror pm-editor="editorCtl.pm.editor" pm-factory="editorCtl.prosemirrorFct" ng-model="editorCtl.prosemirrorFct.model.content" class="columns small-6">
             </prosemirror>
             <div class="columns small-3">
-                <div class="annotation-comment" ng-if="editorCtl.prosemirrorFct.currentAnnotationHash">
-                    <form name="editorCtl.annotationForm" ng-submit="editorCtl.submit()">
+                <div class="annotation-comment" ng-repeat="annotation in editorCtl.prosemirrorFct.selectedAnnotations" ng-if="editorCtl.prosemirrorFct.selectedAnnotations">
+                    <form name="editorCtl.annotationForm" ng-submit="editorCtl.prosemirrorFct.addAnnotationComment(annotation.id, editorCtl.currentComment)">
                         <div class="resolve">
-                            <input type="checkbox" id="resolveCurrent" />
+                            <input type="checkbox" />
                             <label for="resolveCurrent">Resolve</label>
                         </div>
                         <div class="comments">
-                            <div class="comment" ng-repeat="annotation in editorCtl.prosemirrorFct.getCurrentComments() track by $index">
-                                <span>{{ annotation }}</span>
+                            <div class="comment" ng-repeat="text in annotation.texts  track by $index">
+                                <span>{{ text }}</span>
                             </div>
                             <input type="text" placeholder="Commentaire" ng-model="editorCtl.currentComment" />
                             <button type="submit">Ok</button>

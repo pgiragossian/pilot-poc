@@ -1,29 +1,27 @@
+import {Pos} from 'prosemirror/dist/model';
 
-function prosemirrorFactoryProsemirror($interval) {
+function prosemirrorFactoryProsemirror($interval, $rootScope) {
+
+	this.pm = null;
 
 	this.init = function() {
 		this.model = {
 			content: null,
-			annotations: {}
+			annotations: []
 		};
 
-		this.currentAnnotationHash = null;
+		this.selectedAnnotations = [];
 		this.savedModels = {};
 
-		let savedModels = JSON.parse(localStorage.getItem('savedmodels'));
+		let item = localStorage.getItem('savedmodels');
 
-		if (savedModels) {
-			this.savedModels = savedModels;
-		}
+		if (item) {
+			let savedModels = JSON.parse(item);
 
-		this.addAnnotation = function(comment) {
-			if (this.currentAnnotationHash) {
-				if (this.model && this.model.annotations && !this.model.annotations[this.currentAnnotationHash]) {
-					this.model.annotations[this.currentAnnotationHash] = [];
-				}
-				this.model.annotations[this.currentAnnotationHash].push(comment);
+			if (savedModels) {
+				this.savedModels = savedModels;
 			}
-		};
+		}
 
 		this.options = {
 			format: 'json',
@@ -41,8 +39,59 @@ function prosemirrorFactoryProsemirror($interval) {
 		this.lastAutosaveDate = new Date();
 	};
 
-	this.setCurrentAnnotationHash = hash => {
-		this.currentAnnotationHash = hash;
+	this.createAnnotation = function(text) {
+		let id = this.getRandomId();
+		let sel = this.pm.selection;
+		let annotation = this.addAnnotation(sel.from, sel.to, [text], id);
+		this.selectedAnnotations = [annotation];
+	};
+
+	this.getRandomId = function() {
+		return Math.floor(Math.random() * 0xffffffff)
+	};
+
+	this.removeSavedContent = function() {
+		this.savedModels = [];
+		localStorage.setItem('savedmodels', []);
+		localStorage.setItem('autosave', []);
+	};
+
+	this.selectAnnotations = function(pos) {
+		this.selectedAnnotations = this.findAnnotationsAt(pos);
+	};
+
+	this.findAnnotationsAt = function(pos) {
+		let result = [];
+		if (this.model.annotations && this.model.annotations.length ) {
+			this.model.annotations.forEach(annotation => {
+				if (annotation.range &&
+						annotation.range.from &&
+						(annotation.range.from.cmp(pos) < 0) &&
+						annotation.range.to &&
+						(annotation.range.to.cmp(pos) > 0)) {
+					result.push(annotation);
+				}
+			});
+		}
+		console.log('FindAnnotationAt', pos, result);
+		return result;
+	};
+	
+	this.addAnnotation = function(from, to, texts, id) {
+		console.log('adding', from, to, texts, id);
+		let range = this.pm.markRange(from, to, {'className': 'annotation', id});
+		this.pm.flush();
+
+		let annotation = {texts, id, range};
+		this.model.annotations.push(annotation);
+		return annotation;
+	};
+
+	this.removeAnnotations = function() {
+		this.model.annotations.forEach(ann => {
+			this.pm.removeRange(ann.range);
+		});
+		this.model.annotations.length = 0;
 	};
 
 	this.autosave = function() {
@@ -66,37 +115,63 @@ function prosemirrorFactoryProsemirror($interval) {
 	this.save = function() {
 		this.savedModels[new Date().toISOString().slice(0,19)] = JSON.stringify(this.model);
 		localStorage.setItem('savedmodels', JSON.stringify(this.savedModels));
-		console.log(this.model);
 	};
 
-	this.getCurrentComments = function() {
-		if (this.currentAnnotationHash) {
-			return this.model.annotations[this.currentAnnotationHash];
+	this.addAnnotationComment = function(annotationId, comment) {
+
+		if (this.selectedAnnotations.length > 0) {
+			for(let i = 0; i < this.selectedAnnotations.length; i++) {
+				let selAnn = this.selectedAnnotations[i];
+				if (selAnn.id == annotationId) {
+					selAnn.texts.push(comment);
+				}
+			}
 		}
 	};
 
 	this.restore = function(version) {
 		// autosave
+		let restored;
+		this.selectedAnnotations.length = 0;
+
 		if (version == null) {
-			let restored = JSON.parse(localStorage.getItem('autosave'));
-			if (restored) {
-				this.model = restored;
+			let item = localStorage.getItem('autosave');
+			if (item) {
+				restored = JSON.parse(item);
 			}
 		}
 		else if (this.savedModels[version]) {
-			let restored = JSON.parse(this.savedModels[version]);
-			if (restored) {
-				this.model = restored;
+			if (this.savedModels[version]) {
+				restored = JSON.parse(this.savedModels[version]);
 			}
 		}
+		this.removeAnnotations();
+
+		if (restored) {
+			this.model.content = restored.content;
+
+			this.pm.setContent(this.model.content, this.options.format);
+			this.pm.flush();
+
+			if (restored.annotations) {
+				restored.annotations.forEach(ann => {
+					if (ann.range && ann.range.from && ann.range.to) {
+						let from = new Pos(ann.range.from.path, ann.range.from.offset);
+						let to = new Pos(ann.range.to.path, ann.range.to.offset);
+						this.addAnnotation(from, to, ann.texts, ann.id);
+					}
+				});
+			}
+		}
+
+
 	};
 
 	this.init();
-	this.restore();
 
 	return this;
 }
 
-prosemirrorFactoryProsemirror.$inject = ['$interval'];
+prosemirrorFactoryProsemirror.$inject = ['$interval', '$rootScope'];
 
 export default prosemirrorFactoryProsemirror;

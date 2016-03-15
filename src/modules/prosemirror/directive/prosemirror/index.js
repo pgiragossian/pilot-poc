@@ -1,47 +1,37 @@
-import {ProseMirror, MarkedRange} from 'prosemirror/dist/edit';
+import {ProseMirror, CommandSet} from 'prosemirror/dist/edit';
 import 'prosemirror/dist/menu/tooltipmenu';
 import 'prosemirror/dist/menu/menubar';
 import 'prosemirror/dist/menu/menu';
-import {defaultSchema, Schema} from 'prosemirror/dist/model'
-import annotation from './mark_annotation';
-
-let pilotSchema = new Schema(defaultSchema.spec.update({}, {annotation}));
+import {annotationCmd} from './command_annotation';
 
 function prosemirror($parse) {
 		return {
 			restrict: 'E',
 			require: '?ngModel',
 			scope: {
-				pmEditor: '=?',
-				pmOnSelectAnnotation: '=?',
-				pmOnResolveAnnotation: '=?'
+				pmFactory: '=',
 			},
 			link: function(scope, element, attrs, ngModel) {
 
 				let place = element[0],
 						selectedAnnotation = null,
 						options = {
-							schema: pilotSchema,
 							format: 'json',
 							place: place,
 							menuBar: {float: true},
-							tooltipMenu: true
+							tooltipMenu: true,
+							commands: CommandSet.default.add(annotationCmd)
 						},
-						inheritedOptions = $parse(attrs.pmOptions)(scope) || {};
+						inheritedOptions = $parse(scope.pmFactory.options)(scope) || {};
 
 				options = angular.merge(options, inheritedOptions);
 
 				let pm = new ProseMirror(options);
 
-				if (angular.isDefined(scope.pmEditor)) {
-					scope.pmEditor = pm;
-				}
-
-				if (angular.isDefined(scope.pmOnResolveAnnotation)) {
-
-					scope.pmOnResolveAnnotation = function(hash) {
-						console.log('on resolve annotation ' + hash);
-					}
+				if (angular.isDefined(scope.pmFactory)) {
+					scope.pmFactory.pm = pm;
+					pm.mod.factory = scope.pmFactory;
+					scope.pmFactory.restore();
 				}
 
 				pm.on('change', function() {
@@ -56,45 +46,24 @@ function prosemirror($parse) {
 					let sel = pm.selection;
 
 					if (sel.from && sel.to) {
-						if (sel.from.cmp(sel.to) != 0 ) {
-
-							let mr = pm.markRange(sel.from, sel.to, {'className': 'superMarkedRange'});
-							console.log(mr);
+						if (sel.from.cmp(sel.to) != 0) {
 
 							/*
-							pm.doc.sliceBetween(sel.from, sel.to).forEach(
-								(node, start, end) => {
+							 pm.doc.sliceBetween(sel.from, sel.to).forEach(
+							 (node, start, end) => {
 
-									console.log(node.textContent, node.type, start, end)
-								}
-							)
-							*/
-
+							 console.log(node.textContent, node.type, start, end)
+							 }
+							 )
+							 */
 
 
 						}
 						else {
-							let marks = pm.doc.marksAt(sel.from);
-
-
-							marks.forEach(
-									(mark) => {
-										if (mark.type &&
-												mark.type.name === "annotation" &&
-												mark.attrs &&
-												mark.attrs.hash &&
-												angular.isDefined(scope.pmOnSelectAnnotation)) {
-
-											  selectedAnnotation = mark;
-										}
-									}
-							);
+							scope.pmFactory.selectAnnotations(sel.from);
+							scope.$apply();
 						}
 					}
-
-					scope.pmOnSelectAnnotation(selectedAnnotation ? selectedAnnotation.attrs.hash : null);
-					scope.$apply();
-
 				});
 
 				ngModel.$render = function() {
