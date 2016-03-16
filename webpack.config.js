@@ -25,12 +25,13 @@ var config = {
 	},
 	module: {
 		loaders: [
-			{ test: /\.js$/, loader:"babel?presets[]=es2015", exclude: [paths.nm]}
+			{ test: /\.js$/, loader:'babel?presets[]=es2015', exclude: [paths.nm]},
+			{ test: /\.(ttf|eot|svg|woff(2)?)(\?[a-z0-9]+)?$/, loader:'file'}
 		]
 	},
 	resolve: {
 		root: [paths.root],
-		extensions: ['', '.js', '.scss'],
+		extensions: ['', '.js', '.scss', '.css'],
 		moduleDirectories: [
 			'bower_components',
 			'node_modules',

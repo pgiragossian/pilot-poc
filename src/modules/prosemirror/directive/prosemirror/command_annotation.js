@@ -3,12 +3,9 @@ export const annotationCmd = {annotate: {
 	select(pm) {
 			return pm.mod.factory && !pm.selection.empty
 	},
-	run(pm, text) {
-		pm.mod.factory.createAnnotation(text)
+	run(pm) {
+		pm.mod.factory.createAnnotation()
 	},
-	params: [
-		{name: "Annotation text", type: "text"}
-	],
 	menu: {
 		group: "inline", rank: 99,
 		display: {

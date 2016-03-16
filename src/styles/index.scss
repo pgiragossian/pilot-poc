@@ -1,6 +1,7 @@
 @import '~foundation/scss/foundation';
 
 $gray: #e2e3de;
+$yellow: #ffff00;
 
 header {
   height: 100px;
@@ -15,56 +16,87 @@ header {
 
 }
 
-.superMarkedRange {
-  background: yellow;
-}
-
 body {
 
   prosemirror {
     height: 500px;
     min-width: 468px;
 
-    .annotation {
-      background: yellow;
+    [class="annotation annotation annotation annotation"] {
+      background: darken($yellow, 30%);
     }
-
+    [class="annotation annotation annotation"] {
+      background: darken($yellow, 20%);
+    }
+    [class="annotation annotation"] {
+      background: darken($yellow, 10%);
+    }
+    [class="annotation"] {
+      background: $yellow;
+    }
   }
 
-  .annotation-comment {
-    display: block;
-    min-height: 150px;
-    width: 100%;
-    border: 2px solid $gray;
-    -webkit-border-radius: 10px;
-    -moz-border-radius: 10px;
-    border-radius: 10px;
-    margin-bottom: 10px;
+  .annotation-comments {
+    width: 25%;
+    right: 1%;
+    position: absolute;
+    .annotation-comment {
+      display: block;
+      min-height: 150px;
+      width: 100%;
+      border: 2px solid $gray;
+      -webkit-border-radius: 10px;
+      -moz-border-radius: 10px;
+      border-radius: 10px;
+      margin-bottom: 10px;
 
+      .resolve {
+        padding: 10px;
+        border-bottom: 2px solid $gray;
 
-    .resolve {
-      padding: 10px;
-      border-bottom: 2px solid $gray;
+        input {
+          margin: 0;
+        }
 
-      input {
-        margin: 0;
+        label {
+          display: inline-block;
+        }
       }
+      .comments {
+        .buttons {
+          text-align: center;
+        }
+        .comment {
+          padding: 5px;
 
-      label {
-        display: inline-block;
-      }
-    }
-    .comments {
-      .comment {
-        padding: 5px;
-      }
-      input[type=text] {
-        border: none;
-        background: $gray;
+          .text {
+            white-space: pre-line;
+          }
 
-      }
-      button {
-        display: none;
+          .remove, .edit {
+            display: inline-block;
+            background: $gray;
+            padding: 1px 6px 3px 6px;
+            border-radius: 50%;
+            color: white;
+            margin-left: 5px;
+            opacity: 0.1;
+            cursor: pointer;
+            &:hover {
+              color: black;
+            }
+          }
+
+          &:hover .remove, &:hover .edit{
+            opacity: 1.0;
+          }
+        }
+        textarea {
+          border: none;
+          background: $gray;
+          width: 100% !important;
+
+        }
       }
     }
   }

@@ -1,6 +1,6 @@
 import {Pos} from 'prosemirror/dist/model';
 
-function prosemirrorFactoryProsemirror($interval, $rootScope) {
+function prosemirrorFactoryProsemirror($interval, $rootScope, $window) {
 
 	this.pm = null;
 
@@ -13,6 +13,8 @@ function prosemirrorFactoryProsemirror($interval, $rootScope) {
 		this.selectedAnnotations = [];
 		this.savedModels = {};
 		this.currentComment = '';
+		this.editedComment = null;
+		this.annotationCommentsStyle = {top: '0px'};
 
 		let item = localStorage.getItem('savedmodels');
 
@@ -40,11 +42,33 @@ function prosemirrorFactoryProsemirror($interval, $rootScope) {
 		this.lastAutosaveDate = new Date();
 	};
 
-	this.createAnnotation = function(text) {
+	this.cancelEditComment = function() {
+		this.editedComment = null;
+		this.currentComment = '';
+	};
+
+	this.editComment = function(annotationId, commentIndex) {
+		if (this.model.annotations[annotationId] &&
+				this.model.annotations[annotationId].comments[commentIndex]
+				) {
+			this.editedComment = this.model.annotations[annotationId].comments[commentIndex];
+			this.currentComment = this.editedComment.toString();
+		}
+	};
+
+	this.createAnnotation = function() {
 		let id = this.getRandomId();
 		let sel = this.pm.selection;
-		let annotation = this.addAnnotation(sel.from, sel.to, [text], id);
-		this.selectedAnnotations = [annotation];
+		let annotation = this.addAnnotation(sel.from, sel.to, [], id, false);
+		this.selectAnnotations(sel.from, [annotation]);
+		$rootScope.$apply();
+	};
+
+	this.removeAnnotationComment = function(annotationId, commentIndex) {
+		if (this.model.annotations[annotationId] &&
+				this.model.annotations[annotationId].comments[commentIndex]) {
+			this.model.annotations[annotationId].comments.splice(commentIndex, 1);
+		}
 	};
 
 	this.getRandomId = function() {
@@ -57,8 +81,14 @@ function prosemirrorFactoryProsemirror($interval, $rootScope) {
 		localStorage.setItem('autosave', []);
 	};
 
-	this.selectAnnotations = function(pos) {
-		this.selectedAnnotations = this.findAnnotationsAt(pos);
+	this.selectAnnotations = function(pos, forceAnnotations = []) {
+		if (angular.isArray(forceAnnotations) && forceAnnotations.length > 0) {
+			this.selectedAnnotations = forceAnnotations;
+		}
+		else {
+			this.selectedAnnotations = this.findAnnotationsAt(pos);
+		}
+		this.annotationCommentsStyle = {top: ($window.scrollY + this.pm.coordsAtPos(pos).top) + 'px'};
 	};
 
 	this.findAnnotationsAt = function(pos) {
@@ -78,11 +108,9 @@ function prosemirrorFactoryProsemirror($interval, $rootScope) {
 		return result;
 	};
 	
-	this.addAnnotation = function(from, to, texts, id) {
+	this.addAnnotation = function(from, to, comments, id, resolved) {
 		let range = this.pm.markRange(from, to, {'className': 'annotation', id});
-		this.pm.flush();
-
-		let annotation = {texts, id, range};
+		let annotation = {comments, id, range, resolved};
 		this.model.annotations[id] = annotation;
 		return annotation;
 	};
@@ -95,13 +123,15 @@ function prosemirrorFactoryProsemirror($interval, $rootScope) {
 		this.model.annotations = {};
 	};
 
-	this.removeAnnotation = function(id) {
+	this.removeAnnotation = function(id, deleteFromModel = true) {
 
 		if (this.model.annotations[id]) {
 
 			let annotation = this.model.annotations[id];
 			this.pm.removeRange(annotation.range);
-			delete this.model.annotations[id];
+			if (deleteFromModel) {
+				delete this.model.annotations[id];
+			}
 		}
 	};
 
@@ -128,13 +158,28 @@ function prosemirrorFactoryProsemirror($interval, $rootScope) {
 		localStorage.setItem('savedmodels', JSON.stringify(this.savedModels));
 	};
 
-	this.addAnnotationComment = function(annotationId, comment) {
+	this.addOrEditAnnotationComment = function(annotationId, comment) {
 
+		if (! comment.length) {
+			return;
+		}
 		if (this.selectedAnnotations.length > 0) {
 			for(let i = 0; i < this.selectedAnnotations.length; i++) {
 				let selAnn = this.selectedAnnotations[i];
+				selAnn.comments = selAnn.comments || [];
 				if (selAnn.id == annotationId) {
-					selAnn.texts.push(comment);
+					if (this.editedComment) {
+						for (let j = 0; j < selAnn.comments.length; j++) {
+							let currComment = selAnn.comments[j];
+							if (this.editedComment === currComment) {
+								this.selectedAnnotations[i].comments[j] = comment.toString();
+							}
+						}
+					}
+					else {
+						selAnn.comments.push(comment);
+					}
+					break;
 				}
 			}
 		}
@@ -167,7 +212,7 @@ function prosemirrorFactoryProsemirror($interval, $rootScope) {
 					for (let annId in restoredData.annotations) {
 						let ann = restoredData.annotations[annId];
 						if (ann.range && ann.range.from && ann.range.to) {
-							_this.addAnnotation(Pos.fromJSON(ann.range.from), Pos.fromJSON(ann.range.to), ann.texts, ann.id);
+							_this.addAnnotation(Pos.fromJSON(ann.range.from), Pos.fromJSON(ann.range.to), ann.comments, ann.id, ann.resolved);
 						}
 					}
 				}
@@ -186,6 +231,6 @@ function prosemirrorFactoryProsemirror($interval, $rootScope) {
 	return this;
 }
 
-prosemirrorFactoryProsemirror.$inject = ['$interval', '$rootScope'];
+prosemirrorFactoryProsemirror.$inject = ['$interval', '$rootScope', '$window'];
 
 export default prosemirrorFactoryProsemirror;
