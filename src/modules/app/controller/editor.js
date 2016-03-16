@@ -10,6 +10,6 @@ function appControllerEditor(prosemirrorFct, accountFct) {
 
 }
 
-appControllerEditor.$inject = [prosemirrorFct.name];
+appControllerEditor.$inject = [prosemirrorFct.name, accountFct.name];
 
 export default appControllerEditor;

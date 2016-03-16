@@ -8,10 +8,21 @@ header {
   border-bottom: 2px solid $gray;
   margin-bottom: 20px;
 
+  select.account {
+    position: absolute;
+    top:10px;
+    right:50px;
+    width: 190px;
+  }
   button.save {
     position: absolute;
     right: 50px;
-    top: 25px;
+    top: 35px;
+  }
+  button.clean {
+    position: absolute;
+    right: 150px;
+    top: 35px;
   }
 
 }
@@ -68,6 +79,23 @@ body {
         }
         .comment {
           padding: 5px;
+
+          .avatar {
+            width: 30px;
+            height:auto;
+            border-radius:50%;
+          }
+
+          .initials {
+            width: 30px;
+            height: 30px;
+            display: inline-block;
+            background: $gray;
+            text-align: center;
+            vertical-align: middle;
+            padding-top: 6px;
+            border-radius: 50%;
+          }
 
           .text {
             white-space: pre-line;

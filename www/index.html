@@ -5,13 +5,11 @@
 
     <body ng-app="app" ng-controller="appControllerEditor as editorCtl">
         <header>
-            <!--
             <form>
-                <select ng-options="user as user.name for user in editorCtl.accountFct.model.users track by user.id" ng-model="editorCtl.accountFct.model.userSelected"></select>
+                <select class="account" ng-options="user.name for user in editorCtl.accountFct.model.users track by user.id" ng-model="editorCtl.accountFct.model.selectedUser"></select>
             </form>
-            !-->
             <button class="save" ng-disabled="!editorCtl.prosemirrorFct.isSaveEnabled()" type="button" ng-click="editorCtl.prosemirrorFct.save()">Save</button>
-            <button type="button" ng-click="editorCtl.prosemirrorFct.removeSavedContent()">clean</button>
+            <button class="clean" type="button" ng-click="editorCtl.prosemirrorFct.removeSavedContent()">clean</button>
         </header>
         <div class="row">
             <div class="columns small-3">
@@ -36,7 +34,9 @@
                     </div>
                     <div class="comments">
                         <div class="comment" ng-repeat="comment in annotation.comments  track by $index">
-                            <span class="text">{{ comment }}</span>
+                            <span class="initials" ng-hide="comment.user.avatar">{{ comment.user.initials }}</span>
+                            <img class="avatar" ng-show="comment.user.avatar" ng-src="{{ comment.user.avatar }}"/>
+                            <span class="text">{{ comment.text }}</span>
                             <span class="edit" ng-click="editorCtl.prosemirrorFct.editComment(annotation.id, $index)">e</span>
                             <span class="remove" ng-click="editorCtl.prosemirrorFct.removeAnnotationComment(annotation.id, $index)">x</span>
                         </div>
