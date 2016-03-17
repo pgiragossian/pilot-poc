@@ -1,6 +1,8 @@
 import {Pos} from 'prosemirror/dist/model';
 import accountFct from "src/modules/account/factory/account";
 
+
+
 function prosemirrorFactoryProsemirror($interval, $rootScope, $window, accountFct) {
 
 	this.pm = null;
@@ -112,7 +114,15 @@ function prosemirrorFactoryProsemirror($interval, $rootScope, $window, accountFc
 	
 	this.addAnnotation = function(from, to, comments, id, resolved) {
 		let range = this.pm.markRange(from, to, {'className': 'annotation', id});
-		let annotation = {comments, id, range, resolved};
+
+		if (angular.isArray(comments) && comments.length) {
+			var commentsWithDate = comments.map(c => {
+				c.date = (c.date ? new Date(c.date) : new Date());
+				return c;
+			});
+		}
+
+		let annotation = {commentsWithDate, id, range, resolved};
 		this.model.annotations[id] = annotation;
 		return annotation;
 	};
@@ -161,13 +171,14 @@ function prosemirrorFactoryProsemirror($interval, $rootScope, $window, accountFc
 		localStorage.setItem('savedmodels', JSON.stringify(this.savedModels));
 	};
 
-	this.addOrEditAnnotationComment = function(annotationId, comment) {
+	this.addOrEditAnnotationComment = function(annotationId, commentText, commentDate = null) {
 
-		let newComment = {user: accountFct.model.selectedUser, text: comment};
-
-		if (! comment.length) {
+		if (! commentText.length) {
 			return;
 		}
+
+		let newComment = {user: accountFct.model.selectedUser, text: commentText, date: (commentDate ? commentDate : new Date())};
+
 		if (this.selectedAnnotations.length > 0) {
 			for(let i = 0; i < this.selectedAnnotations.length; i++) {
 				let selAnn = this.selectedAnnotations[i];

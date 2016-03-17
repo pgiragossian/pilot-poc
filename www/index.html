@@ -5,14 +5,19 @@
 
     <body ng-app="app" ng-controller="appControllerEditor as editorCtl">
         <header>
+            <span class="show-for-small-only">Small</span>
+            <span class="show-for-medium-only">Medium</span>
+            <span class="show-for-large-only">Large</span>
+            <span class="show-for-xlarge-only">X-Large</span>
+            <span class="show-for-xxlarge-only">XX-Large</span>
             <form>
                 <select class="account" ng-options="user.name for user in editorCtl.accountFct.model.users track by user.id" ng-model="editorCtl.accountFct.model.selectedUser"></select>
             </form>
             <button class="save" ng-disabled="!editorCtl.prosemirrorFct.isSaveEnabled()" type="button" ng-click="editorCtl.prosemirrorFct.save()">Save</button>
             <button class="clean" type="button" ng-click="editorCtl.prosemirrorFct.removeSavedContent()">clean</button>
         </header>
-        <div class="row">
-            <div class="columns small-3">
+        <div>
+            <div class="columns medium-2 show-for-medium-up">
                 <ul>
                     <li ng-show="editorCtl.prosemirrorFct.lastAutosaveDate">
                         <a ng-click="editorCtl.prosemirrorFct.restore()">{{ 'Autosave ' + (editorCtl.prosemirrorFct.lastAutosaveDate | date:'dd/MM/yyyy H:mm:ss')}}</a>
@@ -22,30 +27,39 @@
                     </li>
                 </ul>
             </div>
-            <prosemirror pm-editor="editorCtl.pm.editor" pm-factory="editorCtl.prosemirrorFct" ng-model="editorCtl.prosemirrorFct.model.content" class="columns small-6 end">
+            <prosemirror pm-editor="editorCtl.pm.editor" pm-factory="editorCtl.prosemirrorFct" ng-model="editorCtl.prosemirrorFct.model.content" class="columns small-12 medium-7 end">
             </prosemirror>
         </div>
-        <div class="annotation-comments" ng-style="editorCtl.prosemirrorFct.annotationCommentsStyle">
+        <div class="annotation-comments columns medium-3 show-for-medium-up" ng-style="editorCtl.prosemirrorFct.annotationCommentsStyle">
             <div class="annotation-comment" ng-hide="annotation.resolved" ng-repeat="annotation in editorCtl.prosemirrorFct.selectedAnnotations" ng-if="editorCtl.prosemirrorFct.selectedAnnotations">
                 <form name="editorCtl.annotationForm" ng-submit="">
-                    <div class="resolve">
+                    <div class="resolve" ng-show="annotation.comments.length">
                         <input ng-attr-id="resolveCurrent{{annotation.id}}" type="checkbox" ng-change="editorCtl.prosemirrorFct.removeAnnotation(annotation.id, false)" ng-model="annotation.resolved" />
                         <label ng-attr-for="resolveCurrent{{annotation.id}}">Resolve</label>
                     </div>
                     <div class="comments">
                         <div class="comment" ng-repeat="comment in annotation.comments  track by $index">
-                            <span class="initials" ng-hide="comment.user.avatar">{{ comment.user.initials }}</span>
-                            <img class="avatar" ng-show="comment.user.avatar" ng-src="{{ comment.user.avatar }}"/>
-                            <span class="text">{{ comment.text }}</span>
-                            <span class="edit" ng-click="editorCtl.prosemirrorFct.editComment(annotation.id, $index)">e</span>
-                            <span class="remove" ng-click="editorCtl.prosemirrorFct.removeAnnotationComment(annotation.id, $index)">x</span>
+                            <div class="user">
+                                <span class="initials" ng-hide="comment.user.avatar">{{ comment.user.initials }}</span>
+                                <img class="avatar" ng-show="comment.user.avatar" ng-src="{{ comment.user.avatar }}"/>
+                            </div>
+                            <div class="comment-actions">
+                                <span am-time-ago="comment.date"></span>
+                                <a class="edit" ng-click="editorCtl.prosemirrorFct.editComment(annotation.id, $index)">éditer</a>
+                                <a class="remove" ng-click="editorCtl.prosemirrorFct.removeAnnotationComment(annotation.id, $index)">supprimer</a>
+                            </div>
+                            <div class="comment-text">
+                                <span class="text">{{ comment.text }}</span>
+                            </div>
                         </div>
-                        <textarea class="msd-elastic" type="text" placeholder="Commentaire" ng-model="editorCtl.prosemirrorFct.currentComment">
+                    </div>
+                    <div class="new-comment">
+                        <span class="initials" ng-hide="editorCtl.accountFct.model.selectedUser.avatar">{{ editorCtl.accountFct.model.selectedUser.initials }}</span>
+                        <img class="avatar" ng-show="editorCtl.accountFct.model.selectedUser.avatar" ng-src="{{ editorCtl.accountFct.model.selectedUser.avatar }}"/>
+                        <textarea class="msd-elastic" rows="1" placeholder="Commentaire" ng-model="editorCtl.prosemirrorFct.currentComment">
                         </textarea>
-                        <div class="buttons">
-                            <input type="button" value="OK" ng-click="editorCtl.prosemirrorFct.addOrEditAnnotationComment(annotation.id, editorCtl.prosemirrorFct.currentComment)" />
-                            <input type="button" ng-show="editorCtl.prosemirrorFct.editedComment" value="Annuler" ng-click="editorCtl.prosemirrorFct.cancelEditComment()"/>
-                        </div>
+                        <a ng-show="editorCtl.prosemirrorFct.currentComment" ng-click="editorCtl.prosemirrorFct.addOrEditAnnotationComment(annotation.id, editorCtl.prosemirrorFct.currentComment)">valider</a>
+                        <a ng-show="editorCtl.prosemirrorFct.editedComment" ng-click="editorCtl.prosemirrorFct.cancelEditComment()">annuler</a>
                     </div>
                 </form>
             </div>

@@ -1,5 +1,9 @@
-import 'angular';
 
+import 'moment';
+import 'moment/locale/fr';
+
+import 'angular';
+import 'angular-moment';
 import 'angular-elastic';
 
 import './modules/account';

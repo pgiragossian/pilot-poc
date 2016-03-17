@@ -15,6 +15,7 @@ if (process.argv.indexOf('--env=prod') >= 0) {
 	env = 'prod';
 }
 
+
 var config = {
 	entry: {
 		"app.js": path.join(paths.src, "app.js")
@@ -25,7 +26,7 @@ var config = {
 	},
 	module: {
 		loaders: [
-			{ test: /\.js$/, loader:'babel?presets[]=es2015', exclude: [paths.nm]},
+			{ test: /\.js$/, loader:'babel?presets[]=es2015', include: [paths.src]},
 			{ test: /\.(ttf|eot|svg|woff(2)?)(\?[a-z0-9]+)?$/, loader:'file'}
 		]
 	},
