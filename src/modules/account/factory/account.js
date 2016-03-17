@@ -9,6 +9,7 @@ function accountFactoryAccount() {
 		};
 
 		this.model.selectedUser = this.model.users[0];
+		this.model.connectedUsers = this.model.users;
 	}
 
 	this.init();

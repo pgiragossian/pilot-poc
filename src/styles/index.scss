@@ -1,4 +1,7 @@
-@import '~zurb-foundation-5/scss/foundation';
+@import '~foundation-sites/scss/foundation';
+@import url(https://fonts.googleapis.com/css?family=Roboto:400,400italic,700,700italic);
+
+@include foundation-everything;
 
 $gray: #e2e3de;
 $dark-gray: #47525d;
@@ -7,189 +10,222 @@ $yellow: #ffff00;
 $sizeAvatar: 35px;
 $blue: #008CBA;
 
-header {
-  height: 100px;
-  border-bottom: 2px solid $gray;
-  margin-bottom: 20px;
-
-  select.account {
-    position: absolute;
-    top:10px;
-    right:50px;
-    width: 190px;
-  }
-  button.save {
-    position: absolute;
-    right: 50px;
-    top: 35px;
-  }
-  button.clean {
-    position: absolute;
-    right: 150px;
-    top: 35px;
-  }
-
+button.button {
+  border-radius:5px;
 }
+
 
 body {
 
-  prosemirror {
-    height: 500px;
-    min-width: 468px;
-
-    [class="annotation annotation annotation annotation"] {
-      background: darken($yellow, 30%);
-    }
-    [class="annotation annotation annotation"] {
-      background: darken($yellow, 20%);
-    }
-    [class="annotation annotation"] {
-      background: darken($yellow, 10%);
-    }
-    [class="annotation"] {
-      background: $yellow;
-    }
+  .avatar {
+    width: $sizeAvatar;
+    height: auto;
+    border-radius: 50%;
   }
 
-  .ProseMirror {
-
-    border: none;
-
-    .ProseMirror-content {
-      outline: none;
-
-      .ProseMirror-tooltip-pointer-above {
-        display: none !important;
-      }
-    }
-
-    .ProseMirror-tooltip {
-      background: $dark-gray;
-      color: $light-gray;
-      .ProseMirror-menuitem {
-        .ProseMirror-menu-active {
-          background: none;
-          color: white;
-        }
-
-        &:hover {
-          color: white;
-        }
-      }
-    }
+  .initials {
+    width: $sizeAvatar;
+    height: $sizeAvatar;
+    display: inline-block;
+    background: $gray;
+    text-align: center;
+    vertical-align: middle;
+    padding-top: 4px;
+    border-radius: 50%;
   }
 
-  .annotation-comments {
 
-    a {
-      font-size: 0.8em;
-    }
+  width: 100%;
 
-    .avatar {
-      width: $sizeAvatar;
-      height: auto;
-      border-radius: 50%;
-    }
-
-    .initials {
-      width: $sizeAvatar;
-      height: $sizeAvatar;
+  header {
+    height: 60px;
+    border-bottom: 2px solid $gray;
+    margin-bottom: 20px;
+    padding-top:10px;
+    
+    .user {
       display: inline-block;
-      background: $gray;
-      text-align: center;
       vertical-align: middle;
-      padding-top: 4px;
-      border-radius: 50%;
+      float: right;
+      margin:2px;
     }
 
-    right: 1%;
-    position: absolute;
-    .annotation-comment {
-      display: block;
-      width: 100%;
-      border: 2px solid $gray;
-      -webkit-border-radius: 10px;
-      -moz-border-radius: 10px;
-      border-radius: 10px;
-      margin-bottom: 10px;
+    select.account {
+      float: right;
+      right:50px;
+      width: 190px;
+    }
+    button.save {
+      position: absolute;
+      right: 50px;
+      top: 35px;
+    }
+    button.clean {
+      position: absolute;
+      right: 150px;
+      top: 35px;
+    }
 
-      .resolve {
-        padding: 10px;
-        border-bottom: 2px solid $gray;
+  }
 
-        input {
-          margin: 0;
-          &:hover {
-            color: $blue;
-          }
+  section {
+
+    width: 100%;
+    display: inline-block;
+
+    prosemirror {
+
+      font-family: "Roboto", "Arial";
+
+      height: 500px;
+      min-width: 468px;
+
+      [class="annotation annotation annotation annotation"] {
+        background: darken($yellow, 30%);
+      }
+      [class="annotation annotation annotation"] {
+        background: darken($yellow, 20%);
+      }
+      [class="annotation annotation"] {
+        background: darken($yellow, 10%);
+      }
+      [class="annotation"] {
+        background: $yellow;
+      }
+    }
+
+    .ProseMirror {
+
+      border: none;
+
+      .ProseMirror-menubar {
+        min-height: initial !important;
+      }
+
+      .ProseMirror-content {
+        outline: none;
+
+        .ProseMirror-tooltip-pointer-above {
+          display: none !important;
         }
+      }
 
-        label {
-          display: inline-block;
+      .ProseMirror-tooltip {
+        background: $dark-gray;
+        color: $light-gray;
+        .ProseMirror-menuitem {
+          .ProseMirror-menu-active {
+            background: none;
+            color: white;
+          }
+
           &:hover {
-            color: $blue;
+            color: white;
           }
         }
       }
-      .new-comment {
-        padding: 5px;
-        text-align: center;
-        textarea, textarea:focus {
-          resize: none;
-          border: none;
-          background: none;
-          box-shadow: none;
-          outline: none !important;
-          min-height: $sizeAvatar !important;
-          margin-bottom:0px;
-          width: calc(100% - 40px);
-          vertical-align: top;
-          display: inline-block;
-          padding: 8px 0;
-        }
+    }
+
+    .annotation-comments {
+
+      a {
+        font-size: 0.8em;
       }
 
-      .comments {
-        .buttons {
-          text-align: center;
+
+      right: 1%;
+      position: absolute;
+      .annotation-comment {
+        display: block;
+        width: 100%;
+        border: 2px solid $gray;
+        -webkit-border-radius: 10px;
+        -moz-border-radius: 10px;
+        border-radius: 10px;
+        margin-bottom: 10px;
+
+        .resolve {
+          padding: 10px;
+          border-bottom: 2px solid $gray;
+
+          input {
+            margin: 0;
+            &:hover {
+              color: $blue;
+            }
+          }
+
+          label {
+            display: inline-block;
+            &:hover {
+              color: $blue;
+            }
+          }
         }
-        .comment {
+        .new-comment {
           padding: 5px;
+          left-margin: $sizeAvatar + 5px;
 
-          .user {
-            display: inline-block;
+          a:first-of-type {
+            margin-left: $sizeAvatar + 5px;
+          }
+          textarea, textarea:focus {
+            resize: none;
+            border: none;
+            background: none;
+            box-shadow: none;
+            outline: none !important;
+            min-height: $sizeAvatar !important;
+            margin-bottom: 0px;
+            width: calc(100% - #{$sizeAvatar} - 5px);
             vertical-align: top;
-
-          }
-          .comment-actions {
             display: inline-block;
-            width: calc(100% - 40px);
-            span {
-              font-size: 0.8em;
-            }
-            .remove, .edit {
-              display: inline-block;
-              margin-left: 5px;
-              cursor: pointer;
-            }
+            padding: 8px 0;
           }
-
-          .comment-text {
-            .text {
-              font-size: 0.9em;
-              white-space: pre-line;
-              word-wrap: break-word;
-              width: 100%;
-            }
-          }
-
-
         }
-        textarea {
-          border: none;
-          background: $gray;
-          width: 100% !important;
-          padding: 8px 0px;
+
+        .comments {
+          .buttons {
+            text-align: center;
+          }
+          .comment {
+            padding: 5px;
+
+            .user {
+              display: inline-block;
+              vertical-align: top;
+
+            }
+            .comment-actions {
+              display: inline-block;
+              width: calc(100% - #{$sizeAvatar} - 5px);
+              span {
+                font-size: 0.8em;
+              }
+              .remove, .edit {
+                display: inline-block;
+                margin-left: 5px;
+                cursor: pointer;
+              }
+            }
+
+            .comment-text {
+              .text {
+                font-size: 0.9em;
+                white-space: pre-line;
+                word-wrap: break-word;
+                width: 100%;
+                padding-left: $sizeAvatar + 5px;
+              }
+            }
+
+          }
+          textarea {
+            border: none;
+            background: $gray;
+            width: 100% !important;
+            padding: 8px 0px;
+          }
         }
       }
     }
