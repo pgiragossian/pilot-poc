@@ -1,8 +1,18 @@
 import {ProseMirror, CommandSet} from 'prosemirror/dist/edit';
+import {defaultSchema, Schema} from 'prosemirror/dist/model';
+
 import 'prosemirror/dist/menu/tooltipmenu';
 import 'prosemirror/dist/menu/menubar';
 import 'prosemirror/dist/menu/menu';
 import {annotationCmd} from './command_annotation';
+import LinkMarkPilot from './LinkMarkPilot';
+
+
+let pilotSchema = new Schema(
+	defaultSchema.spec.update(
+		{},
+		{link: LinkMarkPilot}
+	));
 
 function prosemirror($parse) {
 		return {
@@ -17,6 +27,7 @@ function prosemirror($parse) {
 						selectedAnnotation = null,
 						options = {
 							format: 'json',
+							schema: pilotSchema,
 							place: place,
 							menuBar: {float: true},
 							tooltipMenu: true,

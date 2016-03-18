@@ -3,9 +3,10 @@
 
 @include foundation-everything;
 
-$gray: #e2e3de;
-$dark-gray: #47525d;
+$lighter-gray: #ececec;
 $light-gray: #b1b6ba;
+$gray: #777;
+$dark-gray: #47525d;
 $yellow: #ffff00;
 $sizeAvatar: 35px;
 $blue: #008CBA;
@@ -27,7 +28,7 @@ body {
     width: $sizeAvatar;
     height: $sizeAvatar;
     display: inline-block;
-    background: $gray;
+    background: $lighter-gray;
     text-align: center;
     vertical-align: middle;
     padding-top: 4px;
@@ -39,7 +40,7 @@ body {
 
   header {
     height: 60px;
-    border-bottom: 2px solid $gray;
+    border-bottom: 2px solid $lighter-gray;
     margin-bottom: 20px;
     padding-top:10px;
     
@@ -98,6 +99,24 @@ body {
 
       border: none;
 
+      .ProseMirror-tooltip-pointer-above {
+        display: none !important;
+      }
+
+      .ProseMirror-prompt {
+        border: none;
+        background: none;
+
+        input {
+          border: 1px solid $dark-gray;
+          border-radius: 5px;
+        }
+
+        .ProseMirror-prompt-close {
+          display: none;
+        }
+      }
+
       .ProseMirror-menubar {
         min-height: initial !important;
       }
@@ -110,17 +129,26 @@ body {
         }
       }
 
+      .ProseMirror-menu-dropdown-menu {
+        background: $lighter-gray;
+        color: black;
+        border: 1px solid $gray;
+      }
+
       .ProseMirror-tooltip {
-        background: $dark-gray;
-        color: $light-gray;
+        background: $lighter-gray;
+        color: black;
         .ProseMirror-menuitem {
+
+          padding: 5px 2px ;
+
           .ProseMirror-menu-active {
             background: none;
-            color: white;
+            color: $dark-gray;
           }
 
           &:hover {
-            color: white;
+            color: $dark-gray;
           }
         }
       }
@@ -138,7 +166,7 @@ body {
       .annotation-comment {
         display: block;
         width: 100%;
-        border: 2px solid $gray;
+        border: 2px solid $lighter-gray;
         -webkit-border-radius: 10px;
         -moz-border-radius: 10px;
         border-radius: 10px;
@@ -146,7 +174,7 @@ body {
 
         .resolve {
           padding: 10px;
-          border-bottom: 2px solid $gray;
+          border-bottom: 2px solid $lighter-gray;
 
           input {
             margin: 0;
@@ -222,7 +250,7 @@ body {
           }
           textarea {
             border: none;
-            background: $gray;
+            background: $lighter-gray;
             width: 100% !important;
             padding: 8px 0px;
           }
