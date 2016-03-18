@@ -2,8 +2,6 @@ import {MarkType, Attribute} from 'prosemirror/dist/model';
 import {openPrompt, ParamPrompt} from 'prosemirror/dist/ui/prompt';
 import {elt} from 'prosemirror/dist/dom';
 
-console.log(ParamPrompt);
-
 ParamPrompt.prototype.prompt = function() {
 	return openPrompt(this.pm, this.form, {pos:topOfNodeSelection(this.pm), onClose: () => this.close()})
 };
@@ -67,7 +65,5 @@ LinkMarkPilot.register("command", "set", {
 });
 
 LinkMarkPilot.prototype.serializeDOM = (mark, s) => s.elt('a', {href:mark.attrs.href});
-
-
 
 export default LinkMarkPilot;
